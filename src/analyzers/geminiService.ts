@@ -4,7 +4,7 @@ import {
     GenerateContentResult,
     SchemaType,
 } from "@google/generative-ai";
-import * as core from "@actions/core"
+import * as core from "@actions/core";
 
 export interface IGeminiResponse {
     success: boolean;
@@ -139,11 +139,16 @@ export async function runEvaluations(
             properties: {
                 success: {
                     type: SchemaType.BOOLEAN,
+                    nullable: false,
+                    description: "Indicates if the code meets the criteria.",
                 },
                 message: {
                     type: SchemaType.STRING,
+                    nullable: false,
+                    description: "Feedback message from the evaluation.",
                 },
             },
+            required: ["success", "message"],
         };
 
         const geminiClient: GoogleGenerativeAI = getGeminiClient(geminiApiKey);
@@ -173,8 +178,7 @@ export async function runEvaluations(
             if (response.success) {
                 core.info("Criteria aprovada: " + JSON.stringify(criteria));
                 successCount++;
-            }
-            else {
+            } else {
                 core.info("Criteria reprovada: " + JSON.stringify(criteria));
             }
         }
