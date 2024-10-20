@@ -5,7 +5,7 @@ import * as github from "@actions/github"
 import * as exec from "@actions/exec"
 
 // export async function validateAuthentication(): Promise<void> {
-// 	const token = process.env.GITHUB_TOKEN || core.getInput("github-token")
+// 	const token = githubToken || core.getInput("github-token")
 // 	if (!token) {
 // 		throw new Error(
 // 			"GITHUB_TOKEN is not available. Please ensure it is provided."
@@ -20,13 +20,13 @@ import * as exec from "@actions/exec"
 // 	// If additional cloning is needed, implement the logic here
 // }
 
-export async function getChangedFiles(): Promise<string[]> {
+export async function getChangedFiles(githubToken: string): Promise<string[]> {
 	const eventName = github.context.eventName
 	const changedFiles: string[] = []
 
 	if (eventName === "pull_request" || eventName === "pull_request_target") {
 		// For pull requests, get the list of changed files via the GitHub API
-		const token = process.env.GITHUB_TOKEN || core.getInput("github-token")
+		const token = githubToken || core.getInput("github-token")
 		if (!token) {
 			throw new Error(
 				"GITHUB_TOKEN is not available. Cannot get changed files."
@@ -89,8 +89,8 @@ export async function approveOrRejectPR(isApproved: boolean): Promise<void> {
 	}
 }
 
-export async function postComment(body: string): Promise<void> {
-	const token = process.env.GITHUB_TOKEN || core.getInput("github-token")
+export async function postComment(body: string, githubToken: string): Promise<void> {
+	const token = githubToken || core.getInput("github-token")
 	if (!token) {
 		core.warning("GITHUB_TOKEN is not available. Cannot post comment.")
 		return

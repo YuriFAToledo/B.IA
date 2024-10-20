@@ -21,7 +21,7 @@ export async function runController(
 
     // If validations pass, call the service
     try {
-        await runService(requirements, geminiApiToken);
+        await runService(requirements, geminiApiToken, githubToken);
     } catch (error: any) {
         core.setFailed(`Error during service execution: ${error.message}`);
     }
@@ -31,12 +31,12 @@ export async function runController(
 
 function parseRequirements(
     requirementsInput: string
-): { [publicName: string]: number } | null {
+): { [publicName: string]: number } {
     try {
         const requirements = JSON.parse(requirementsInput);
         return requirements;
     } catch (error) {
-        return null;
+        return {'fafa': 1};
     }
 }
 

@@ -1,17 +1,18 @@
 // main service
 
 import {getFileContent} from "../utils/fileService"
-import {approveOrRejectPR, getChangedFiles} from "../utils/githubService"
+import {approveOrRejectPR, getChangedFiles, postComment} from "../utils/githubService"
 import {getWcagCriteria, IRequirements} from "../utils/wcagService"
 import {IEvaluationReturn, runEvaluations} from "./geminiService"
 
 export async function runService(
 	requirements: IRequirements,
-	geminiApiToken: string
+	geminiApiToken: string,
+    githubToken: string
 ): Promise<void> {
 	const publicos = getWcagCriteria(requirements)
 
-	const paths = await getChangedFiles()
+	const paths = await getChangedFiles(githubToken)
 
 	let codeStr: string = ""
 
@@ -35,7 +36,19 @@ export async function runService(
 		(evaluation) => !evaluation.success
 	)
 
-	approveOrRejectPR(reproved.length == 0)
+    if(reproved.length > 0) {
+        let message = "The code does not meet the following requirements:\n\n"
+        reproved.forEach((evaluation) => {
+            message += `* ${evaluation.message}\n`
+        })
+        postComment(message, githubToken)
+        return
+    }
+    
+
+
+	approveOrRejectPR(reproved.length == 0);
+    postComment('Parabains', githubToken)
 
 	return
 }
