@@ -41,13 +41,13 @@ export function getEvaluationPrompt(criteria: string, code: string): string {
 
         export interface IGeminiResponse {
             success: boolean;
-            message: string | null;
+            message: string;
         }
 
-        Output will be always JUST a JSON object with a key success (boolean) and a key message (string | null) only if not success. The message will contain the feedback from the evaluation.
+        Output will be always JUST a JSON object with a key success (boolean) and a key message (string ) only if not success. The message will contain the feedback from the evaluation.
         {
             "success": true or false,
-            "message": "string" or null
+            "message": "string" 
         }
 
         Example 1:
@@ -142,7 +142,6 @@ export async function runEvaluations(
                 },
                 message: {
                     type: SchemaType.STRING,
-                    nullable: true,
                 },
             },
         };
