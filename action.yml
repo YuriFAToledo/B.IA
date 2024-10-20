@@ -10,8 +10,9 @@ inputs:
     description: 'Gemini API Token for validations and feedback (use Github Secrets)'
     required: true
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
+
 branding:
   color: 'green'
   icon: 'check'
