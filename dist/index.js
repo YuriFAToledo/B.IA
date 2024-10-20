@@ -31650,9 +31650,11 @@ function runService(requirements, geminiApiToken, githubToken) {
             reproved.forEach((evaluation) => {
                 message += `* ${evaluation.message}\n`;
             });
+            core.notice(message);
             (0, githubService_1.postComment)(message, githubToken);
         }
         else {
+            core.notice("Parabains");
             (0, githubService_1.postComment)("Parabains", githubToken);
         }
         (0, githubService_1.approveOrRejectPR)(reproved.length == 0);
