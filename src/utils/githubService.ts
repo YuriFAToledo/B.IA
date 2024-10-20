@@ -27,34 +27,27 @@ export async function getChangedFiles(githubToken: string): Promise<string[]> {
 
 	const changedFiles: string[] = []
 
-	if (eventName === "pull_request" || eventName === "pull_request_target") {
-		// For pull requests, get the list of changed files via the GitHub API
-		const token = githubToken || core.getInput("github-token")
-		if (!token) {
-			core.setFailed("GITHUB_TOKEN is not available. Cannot get changed files.")
-			throw new Error(
-				"GITHUB_TOKEN is not available. Cannot get changed files."
-			)
+	if (eventName === 'pull_request' || eventName === 'pull_request_target') {
+		const baseSha = github.context.payload.pull_request?.base?.sha;
+		const headSha = github.context.payload.pull_request?.head?.sha;
+	
+		if (!baseSha || !headSha) {
+		  core.setFailed('Cannot determine changed files without "base" and "head" commits.');
+		  throw new Error('Cannot determine changed files without "base" and "head" commits.');
 		}
-
-		const octokit = github.getOctokit(token)
-		const pull_number = github.context.payload.pull_request?.number
-
-		if (!pull_number) {
-			core.setFailed("Could not get pull request number from context.")
-			throw new Error("Could not get pull request number from context.")
-		}
-
-		const {data: files} = await octokit.rest.pulls.listFiles({
-			owner: github.context.repo.owner,
-			repo: github.context.repo.repo,
-			pull_number,
-		})
-
-		files.forEach((file) => {
-			changedFiles.push(file.filename)
-		})
-	} else if (eventName === "push") {
+	
+		let output = '';
+		await exec.exec('git', ['diff', '--name-only', `${baseSha}`, `${headSha}`], {
+		  listeners: {
+			stdout: (data: Buffer) => {
+			  output += data.toString();
+			},
+		  },
+		});
+	
+		const files = output.trim().split('\n').filter((file) => file);
+		changedFiles.push(...files);
+	  } else if (eventName === "push") {
 		// For push events, get the list of changed files using git
 		const before = github.context.payload.before
 		core.info(JSON.stringify(before));

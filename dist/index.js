@@ -31965,32 +31965,28 @@ const exec = __importStar(__nccwpck_require__(5236));
 // 	// If additional cloning is needed, implement the logic here
 // }
 function getChangedFiles(githubToken) {
-    var _a;
+    var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
         const eventName = github.context.eventName;
         core.info(eventName);
         const changedFiles = [];
-        if (eventName === "pull_request" || eventName === "pull_request_target") {
-            // For pull requests, get the list of changed files via the GitHub API
-            const token = githubToken || core.getInput("github-token");
-            if (!token) {
-                core.setFailed("GITHUB_TOKEN is not available. Cannot get changed files.");
-                throw new Error("GITHUB_TOKEN is not available. Cannot get changed files.");
+        if (eventName === 'pull_request' || eventName === 'pull_request_target') {
+            const baseSha = (_b = (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.base) === null || _b === void 0 ? void 0 : _b.sha;
+            const headSha = (_d = (_c = github.context.payload.pull_request) === null || _c === void 0 ? void 0 : _c.head) === null || _d === void 0 ? void 0 : _d.sha;
+            if (!baseSha || !headSha) {
+                core.setFailed('Cannot determine changed files without "base" and "head" commits.');
+                throw new Error('Cannot determine changed files without "base" and "head" commits.');
             }
-            const octokit = github.getOctokit(token);
-            const pull_number = (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
-            if (!pull_number) {
-                core.setFailed("Could not get pull request number from context.");
-                throw new Error("Could not get pull request number from context.");
-            }
-            const { data: files } = yield octokit.rest.pulls.listFiles({
-                owner: github.context.repo.owner,
-                repo: github.context.repo.repo,
-                pull_number,
+            let output = '';
+            yield exec.exec('git', ['diff', '--name-only', `${baseSha}`, `${headSha}`], {
+                listeners: {
+                    stdout: (data) => {
+                        output += data.toString();
+                    },
+                },
             });
-            files.forEach((file) => {
-                changedFiles.push(file.filename);
-            });
+            const files = output.trim().split('\n').filter((file) => file);
+            changedFiles.push(...files);
         }
         else if (eventName === "push") {
             // For push events, get the list of changed files using git
