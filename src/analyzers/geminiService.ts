@@ -116,14 +116,14 @@ export async function evaluateCriteria(
     );
 
     // bota log aqui
-    core.info("Evaluation: " + evaluation);
+    core.info("Evaluation: " + JSON.stringify(evaluation));
 
     const JSONEvaluation: IGeminiResponse = JSON.parse(
         evaluation.response.text()
     );
 
     // bota log aqui
-    core.info("JSONEvaluation: " + JSONEvaluation);
+    core.info("JSONEvaluation: " + JSON.stringify(JSONEvaluation));
 
     return JSONEvaluation;
 }
@@ -172,11 +172,11 @@ export async function runEvaluations(
             geminiResponses.push(response);
 
             if (response.success) {
-                core.info("Criteria aprovada: " + criteria);
+                core.info("Criteria aprovada: " + JSON.stringify(criteria));
                 successCount++;
             }
             else {
-                core.info("Criteria reprovada: " + criteria);
+                core.info("Criteria reprovada: " + JSON.stringify(criteria));
             }
         }
 

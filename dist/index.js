@@ -31502,10 +31502,10 @@ function evaluateCriteria(gemini, criteria, code) {
         const prompt = getEvaluationPrompt(criteria.description, code);
         const evaluation = yield gemini.generateContent(prompt);
         // bota log aqui
-        core.info("Evaluation: " + evaluation);
+        core.info("Evaluation: " + JSON.stringify(evaluation));
         const JSONEvaluation = JSON.parse(evaluation.response.text());
         // bota log aqui
-        core.info("JSONEvaluation: " + JSONEvaluation);
+        core.info("JSONEvaluation: " + JSON.stringify(JSONEvaluation));
         return JSONEvaluation;
     });
 }
@@ -31542,11 +31542,11 @@ function runEvaluations(geminiApiKey, requirements, code) {
                 const response = yield evaluateCriteria(model, criteria, code);
                 geminiResponses.push(response);
                 if (response.success) {
-                    core.info("Criteria aprovada: " + criteria);
+                    core.info("Criteria aprovada: " + JSON.stringify(criteria));
                     successCount++;
                 }
                 else {
-                    core.info("Criteria reprovada: " + criteria);
+                    core.info("Criteria reprovada: " + JSON.stringify(criteria));
                 }
             }
             const successRate = successCount / criterias.length;
