@@ -40,7 +40,7 @@ To add our solution to the pipeline, include the following in your workflow file
 ### Workflow Example
 
 ```yaml
-name: Test B.IA Accessibility Checker
+name: MyPipeline
 
 on:
   push:
@@ -51,6 +51,7 @@ on:
       - main
 
 jobs:
+  #... others jobs
   test_accessibility_action:
     runs-on: ubuntu-latest
 
