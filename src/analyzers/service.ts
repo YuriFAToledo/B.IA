@@ -1,19 +1,45 @@
 // main service
 
-// entende as regras a serem atingidas - this
+import {getFileContent} from "../utils/fileService"
+import {approveOrRejectPR, getChangedFiles} from "../utils/githubService"
+import {getWcagCriteria, IRequirements} from "../utils/wcagService"
+import {IEvaluationReturn, runEvaluations} from "./geminiService"
 
-// entende quais criterios devem ser passados para as chamadas pro gemini - wcagService
+export async function runService(
+	requirements: IRequirements,
+	geminiApiToken: string
+): Promise<void> {
+	const publicos = getWcagCriteria(requirements)
 
-// autentica repo e clona e identifica os path- githubService
+	const paths = await getChangedFiles()
 
-// acessa os códigos - fileService
+	let codeStr: string = ""
 
-// faz as chamadas pro gemini - geminiService
+	for (const path of paths) {
+		const fileContent = await getFileContent(path)
+		codeStr += fileContent[path]
+	}
 
-// coleta e calcula quantas de quantas foram atingidas - this
+	const evaluations: IEvaluation[] = []
 
-    // chama gemini de feedback, se necessário - geminiService
+	for (const publico of publicos) {
+		const response: IEvaluationReturn = await runEvaluations(
+			geminiApiToken,
+			publico,
+			codeStr
+		)
+		evaluations.push({...response, publicName: publico.publicName})
+	}
 
-// chama os métodos do githubService para aprovar ou rejeitar o PR e escrever o comentário - githubService
+	const reproved: IEvaluation[] = evaluations.filter(
+		(evaluation) => !evaluation.success
+	)
 
-// return
+	approveOrRejectPR(reproved.length == 0)
+
+	return
+}
+
+interface IEvaluation extends IEvaluationReturn {
+	publicName: string
+}

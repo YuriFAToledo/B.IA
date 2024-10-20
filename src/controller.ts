@@ -2,7 +2,6 @@
 // src/controller.ts
 
 import * as core from "@actions/core";
-import { validateRequirementsInput } from "./utils/wcagService";
 import { runService } from "./analyzers/service";
 
 export async function runController(

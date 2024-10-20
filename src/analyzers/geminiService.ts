@@ -1,39 +1,44 @@
 import {
-    GoogleGenerativeAI,
-    GenerativeModel,
-    GenerateContentResult,
-    SchemaType,
-} from "@google/generative-ai";
+	GoogleGenerativeAI,
+	GenerativeModel,
+	GenerateContentResult,
+	SchemaType,
+} from "@google/generative-ai"
 
-interface IGeminiResponse {
-    success: boolean;
-    message: string | null;
+export interface IGeminiResponse {
+	success: boolean
+	message: string | null
 }
 
-interface ICriteria {
-    id: string;
-    name: string;
-    level: string;
-    description: string;
+export interface ICriteria {
+	id: string
+	name: string
+	level: string
+	description: string
 }
 
-interface ICriteriaRequirements {
-    criterias: ICriteria[];
-    value: number;
+export interface ICriteriaRequirements {
+	criterias: ICriteria[]
+	value: number
+}
+
+export interface IEvaluationReturn {
+	success: boolean
+	message: string
 }
 
 export function getGeminiClient(geminiApiKey: string): GoogleGenerativeAI {
-    return new GoogleGenerativeAI(geminiApiKey);
+	return new GoogleGenerativeAI(geminiApiKey)
 }
 
 export function getEvaluationPrompt(criteria: string, code: string): string {
-    const prompt = `
+	const prompt = `
         You will receive a code and a criteria of quality.
         Your task is to evaluate the code based on the criteria.
         YOU SHOULD ALWAYS EVALUATE THE CODE BASED ON THE CRITERIA, NOT BASED ON YOUR PERSONAL OPINION.
-        YOU SHOULD ALWAYS RETURN FOLLOWING THIS INTERFACE:
+        YOU SHOULD ALWAYS RETURN FOLLOWING THIS export INTERFACE:
 
-        interface IGeminiResponse {
+        export interface IGeminiResponse {
             success: boolean;
             message: string | null;
         }
@@ -94,74 +99,78 @@ export function getEvaluationPrompt(criteria: string, code: string): string {
         Code:
 
         ${code}
-    `;
+    `
 
-    return prompt;
+	return prompt
 }
 
 export async function evaluateCriteria(
-    gemini: GenerativeModel,
-    criteria: ICriteria,
-    code: string
+	gemini: GenerativeModel,
+	criteria: ICriteria,
+	code: string
 ): Promise<IGeminiResponse> {
-    const prompt: string = getEvaluationPrompt(criteria.description, code);
-    const evaluation: GenerateContentResult = await gemini.generateContent(
-        prompt
-    );
-    const JSONEvaluation: IGeminiResponse = JSON.parse(
-        evaluation.response.text()
-    );
+	const prompt: string = getEvaluationPrompt(criteria.description, code)
+	const evaluation: GenerateContentResult = await gemini.generateContent(prompt)
+	const JSONEvaluation: IGeminiResponse = JSON.parse(evaluation.response.text())
 
-    return JSONEvaluation;
+	return JSONEvaluation
 }
 
 export async function runEvaluations(
-    geminiApiKey: string,
-    requirements: ICriteriaRequirements,
-    code: string
-): Promise<string> {
-    try {
-        const geminiClient: GoogleGenerativeAI = getGeminiClient(geminiApiKey);
-        const model: GenerativeModel = geminiClient.getGenerativeModel({
-            model: "gemini-1.5-flash",
-        });
+	geminiApiKey: string,
+	requirements: ICriteriaRequirements,
+	code: string
+): Promise<IEvaluationReturn> {
+	try {
+		const geminiClient: GoogleGenerativeAI = getGeminiClient(geminiApiKey)
+		const model: GenerativeModel = geminiClient.getGenerativeModel({
+			model: "gemini-1.5-flash",
+		})
 
-        const successMinRate: number = requirements.value;
-        const criterias: ICriteria[] = requirements.criterias;
+		const successMinRate: number = requirements.value
+		const criterias: ICriteria[] = requirements.criterias
 
-        let successCount: number = 0;
-        let geminiResponses: IGeminiResponse[] = [];
+		let successCount: number = 0
+		let geminiResponses: IGeminiResponse[] = []
 
-        for (const criteria of criterias) {
-            const response: IGeminiResponse = await evaluateCriteria(
-                model,
-                criteria,
-                code
-            );
-            geminiResponses.push(response);
+		for (const criteria of criterias) {
+			const response: IGeminiResponse = await evaluateCriteria(
+				model,
+				criteria,
+				code
+			)
+			geminiResponses.push(response)
 
-            if (response.success) {
-                successCount++;
-            }
-        }
+			if (response.success) {
+				successCount++
+			}
+		}
 
-        const successRate: number = successCount / criterias.length;
-        if (successRate >= successMinRate) {
-            return "The code meets the requirements.";
-        }
+		const successRate: number = successCount / criterias.length
+		if (successRate >= successMinRate) {
+			return {
+				success: true,
+				message: "The code meets the requirements.",
+			}
+		}
 
-        let errorReport: string =
-            "The code does not meet the requirements.\n\n";
-        for (const geminiResponse of geminiResponses) {
-            if (geminiResponse.success) continue;
+		let errorReport: string = "The code does not meet the requirements.\n\n"
+		for (const geminiResponse of geminiResponses) {
+			if (geminiResponse.success) continue
 
-            errorReport += `• ${geminiResponse.message}\n\n`;
-        }
+			errorReport += `• ${geminiResponse.message}\n\n;`
+		}
 
-        return errorReport;
-    } catch (error) {
-        console.log(error);
+		return {
+			success: false,
+			message: errorReport,
+		}
+	} catch (error) {
+		console.log(error)
 
-        return "An error occurred while evaluating the code.";
-    }
+		return {
+			success: false,
+			message: "An error occurred while evaluating the code.",
+		}
+	}
 }
