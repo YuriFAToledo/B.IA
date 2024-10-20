@@ -4,6 +4,7 @@ import {
     GenerateContentResult,
     SchemaType,
 } from "@google/generative-ai";
+import * as core from "@actions/core"
 
 export interface IGeminiResponse {
     success: boolean;
@@ -115,12 +116,14 @@ export async function evaluateCriteria(
     );
 
     // bota log aqui
+    core.info("Evaluation: " + evaluation);
 
     const JSONEvaluation: IGeminiResponse = JSON.parse(
         evaluation.response.text()
     );
 
     // bota log aqui
+    core.info("JSONEvaluation: " + JSONEvaluation);
 
     return JSONEvaluation;
 }
@@ -160,6 +163,7 @@ export async function runEvaluations(
         let geminiResponses: IGeminiResponse[] = [];
 
         for (const criteria of criterias) {
+            core.info("Criteria avaliada: " + criteria);
             const response: IGeminiResponse = await evaluateCriteria(
                 model,
                 criteria,
@@ -168,7 +172,11 @@ export async function runEvaluations(
             geminiResponses.push(response);
 
             if (response.success) {
+                core.info("Criteria aprovada: " + criteria);
                 successCount++;
+            }
+            else {
+                core.info("Criteria reprovada: " + criteria);
             }
         }
 
