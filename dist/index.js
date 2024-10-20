@@ -31518,11 +31518,16 @@ function runEvaluations(geminiApiKey, requirements, code) {
                 properties: {
                     success: {
                         type: generative_ai_1.SchemaType.BOOLEAN,
+                        nullable: false,
+                        description: "Indicates if the code meets the criteria.",
                     },
                     message: {
                         type: generative_ai_1.SchemaType.STRING,
+                        nullable: false,
+                        description: "Feedback message from the evaluation.",
                     },
                 },
+                required: ["success", "message"],
             };
             const geminiClient = getGeminiClient(geminiApiKey);
             const model = geminiClient.getGenerativeModel({
