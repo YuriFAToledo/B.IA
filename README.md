@@ -1,5 +1,24 @@
 # B.IA - Integrating Accessibility Checks into Your CI/CD Pipeline
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Features](#features)
+- [Inputs](#inputs)
+- [Outputs](#outputs)
+- [Usage](#usage)
+  - [Prerequisites](#prerequisites)
+  - [Adding to the Pipeline](#adding-to-the-pipeline)
+- [Example](#example)
+  - [Workflow Example](#workflow-example)
+- [Supported Audiences](#supported-audiences)
+- [License](#license)
+- [Contributing](#contributing)
+- [Acknowledgements](#acknowledgements)
+- [Contact Information](#contact-information)
+
 ## Introduction
 
 B.IA is a GitHub Action designed to enable and facilitate companies to adopt a step in their CI/CD pipeline that checks the accessibility of their code. To do this, they simply need to define at least one target audience and a percentage of guidelines to be met. This allows companies to avoid the learning curve costs and external solutions to make their products accessible, by just adding a step capable of understanding whether the produced code complies with the WCAG guidelines impacting the defined audience.
