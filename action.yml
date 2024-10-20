@@ -4,10 +4,14 @@ author: 'Yuri Toledo yuri.toledo@sou.inteli.edu.br - Gabriel Farias gabriel.alve
 inputs:
   requirements:
     description: 'JSON object with the accessibility requirements for each target audience'
+    # Ex: { "totalBlindness": 1.0 }
     required: true
   geminiApiToken:
-    description: 'Gemini API Token for validations and feedback'
+    description: 'Gemini API Token for validations and feedback (use Github Secrets)'
     required: true
 runs:
   using: 'node12'
   main: 'dist/index.js'
+branding:
+  color: 'green'
+  icon: 'check'
