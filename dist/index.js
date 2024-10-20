@@ -32034,19 +32034,53 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getWcagCriteria = void 0;
-const fs = __importStar(__nccwpck_require__(9896));
-const path = __importStar(__nccwpck_require__(6928));
 const core = __importStar(__nccwpck_require__(7484));
 const querystring_1 = __nccwpck_require__(3480);
 function getWcagCriteria(requirements) {
     core.info((0, querystring_1.stringify)(requirements));
     // Parse the requirements string into an object
     // Load the wcag-criteria.json file
-    const wcagCriteriaPath = path.resolve(__dirname, "../constants/wcag-criteria.json");
+    // const wcagCriteriaPath = path.resolve(
+    // 	__dirname,
+    // 	"../constants/wcag-criteria.json"
+    // )
     let wcagData;
     try {
-        const data = fs.readFileSync(wcagCriteriaPath, "utf8");
-        wcagData = JSON.parse(data);
+        // const data = fs.readFileSync(wcagCriteriaPath, "utf8")
+        wcagData = {
+            "totalBlindness": [
+                {
+                    "id": "1.1.1",
+                    "name": "Non-text Content",
+                    "level": "A",
+                    "description": "Provide text alternatives for all non-text content."
+                },
+                {
+                    "id": "1.3.1",
+                    "name": "Information and Relationships",
+                    "level": "A",
+                    "description": "Ensure that information structure can be programmatically determined."
+                },
+                {
+                    "id": "2.1.1",
+                    "name": "Keyboard",
+                    "level": "A",
+                    "description": "All content must be operable via keyboard."
+                },
+                {
+                    "id": "3.3.2",
+                    "name": "Labels or Instructions",
+                    "level": "A",
+                    "description": "Provide descriptive labels for data inputs."
+                },
+                {
+                    "id": "4.1.2",
+                    "name": "Name, Role, Value",
+                    "level": "A",
+                    "description": "User interface components must have programmatically defined name, role, and value."
+                }
+            ]
+        };
     }
     catch (error) {
         core.setFailed("Error reading wcag-criteria.json file.");
