@@ -157,6 +157,7 @@ export async function runEvaluations(
             generationConfig: {
                 responseMimeType: "application/json",
                 responseSchema: responseSchema,
+                temperature: 0.01,
             },
         });
 
