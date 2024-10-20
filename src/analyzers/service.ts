@@ -36,6 +36,8 @@ export async function runService(
 		(evaluation) => !evaluation.success
 	)
 
+    approveOrRejectPR(reproved.length == 0);
+
     if(reproved.length > 0) {
         let message = "The code does not meet the following requirements:\n\n"
         reproved.forEach((evaluation) => {
@@ -44,10 +46,7 @@ export async function runService(
         postComment(message, githubToken)
         return
     }
-    
 
-
-	approveOrRejectPR(reproved.length == 0);
     postComment('Parabains', githubToken)
 
 	return
