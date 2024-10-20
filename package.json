@@ -20,7 +20,8 @@
   "homepage": "https://github.com/YuriFAToledo/B.IA#readme",
   "dependencies": {
     "@actions/core": "^1.11.1",
-    "@actions/github": "^6.0.0"
+    "@actions/github": "^6.0.0",
+    "@google/generative-ai": "^0.21.0"
   },
   "devDependencies": {
     "@types/node": "^14.18.63",
