@@ -1,54 +1,75 @@
-// // src/controller.ts
 
-// import * as core from '@actions/core';
-// import { validateRequirementsInput } from './utils/wcagService';
-// import { runService } from './analyzers/service';
+// src/controller.ts
 
-// export async function runController(requirementsInput: string, geminiApiToken: string): Promise<void> {
-//   // Receive the inputs
-//   const requirements = parseRequirements(requirementsInput);
+import * as core from "@actions/core";
+import { validateRequirementsInput } from "./utils/wcagService";
+import { runService } from "./analyzers/service";
 
-//   // Perform validations
-//   const validationError = validateRequirements(requirements);
-//   if (validationError) {
-//     core.setFailed(validationError);
-//     return;
-//   }
+export async function runController(
+    requirementsInput: string,
+    geminiApiToken: string,
+    githubToken: string
+): Promise<void> {
+    // Receive the inputs
+    const requirements = parseRequirements(requirementsInput);
 
-//   // If validations pass, call the service
-//   try {
-//     await runService(requirements, geminiApiToken);
-//   } catch (error: any) {
-//     core.setFailed(`Error during service execution: ${error.message}`);
-//   }
-// }
+    // Perform validations
+    const validationError = validateRequirements(requirements);
+    if (validationError) {
+        core.setFailed(validationError);
+        return;
+    }
 
-// // Methods within this file
+    // If validations pass, call the service
+    try {
+        await runService(requirements, geminiApiToken);
+    } catch (error: any) {
+        core.setFailed(`Error during service execution: ${error.message}`);
+    }
+}
 
-// function parseRequirements(requirementsInput: string): { [publicName: string]: number } | null {
-//   try {
-//     const requirements = JSON.parse(requirementsInput);
-//     return requirements;
-//   } catch (error) {
-//     return null;
-//   }
-// }
+// Methods within this file
 
-// function validateRequirements(requirements: { [publicName: string]: number } | null): string | null {
-//   if (!requirements) {
-//     return 'Invalid requirements input. It should be a valid JSON object with target audiences and required percentages.';
-//   }
+function parseRequirements(
+    requirementsInput: string
+): { [publicName: string]: number } | null {
+    try {
+        const requirements = JSON.parse(requirementsInput);
+        return requirements;
+    } catch (error) {
+        return null;
+    }
+}
 
-//   const validPublics = ['totalBlindness', 'lowVision', 'colorBlindness', 'motorImpairment', 'cognitiveDisability'];
+function validateRequirements(
+    requirements: { [publicName: string]: number } | null
+): string | null {
+    if (!requirements) {
+        return "Invalid requirements input. It should be a valid JSON object with target audiences and required percentages.";
+    }
 
-//   for (const [publicName, percentage] of Object.entries(requirements)) {
-//     if (!validPublics.includes(publicName)) {
-//       return `Invalid target audience: ${publicName}. Valid options are: ${validPublics.join(', ')}.`;
-//     }
-//     if (typeof percentage !== 'number' || percentage < 0 || percentage > 1) {
-//       return `Invalid percentage for ${publicName}. It should be a number between 0 and 1.`;
-//     }
-//   }
+    const validPublics = [
+        "totalBlindness",
+        "lowVision",
+        "colorBlindness",
+        "motorImpairment",
+        "cognitiveDisability",
+    ];
 
-//   return null; // No errors
-// }
+    for (const [publicName, percentage] of Object.entries(requirements)) {
+        if (!validPublics.includes(publicName)) {
+            return `Invalid target audience: ${publicName}. Valid options are: ${validPublics.join(
+                ", "
+            )}.`;
+        }
+        if (
+            typeof percentage !== "number" ||
+            percentage < 0 ||
+            percentage > 1
+        ) {
+            return `Invalid percentage for ${publicName}. It should be a number between 0 and 1.`;
+        }
+    }
+
+    return null; // No errors
+}
