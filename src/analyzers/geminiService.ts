@@ -120,41 +120,48 @@ export async function runEvaluations(
     requirements: ICriteriaRequirements,
     code: string
 ): Promise<string> {
-    const geminiClient: GoogleGenerativeAI = getGeminiClient(geminiApiKey);
-    const model: GenerativeModel = geminiClient.getGenerativeModel({
-        model: "gemini-1.5-flash",
-    });
+    try {
+        const geminiClient: GoogleGenerativeAI = getGeminiClient(geminiApiKey);
+        const model: GenerativeModel = geminiClient.getGenerativeModel({
+            model: "gemini-1.5-flash",
+        });
 
-    const successMinRate: number = requirements.value;
-    const criterias: ICriteria[] = requirements.criterias;
+        const successMinRate: number = requirements.value;
+        const criterias: ICriteria[] = requirements.criterias;
 
-    let successCount: number = 0;
-    let geminiResponses: IGeminiResponse[] = [];
+        let successCount: number = 0;
+        let geminiResponses: IGeminiResponse[] = [];
 
-    for (const criteria of criterias) {
-        const response: IGeminiResponse = await evaluateCriteria(
-            model,
-            criteria,
-            code
-        );
-        geminiResponses.push(response);
+        for (const criteria of criterias) {
+            const response: IGeminiResponse = await evaluateCriteria(
+                model,
+                criteria,
+                code
+            );
+            geminiResponses.push(response);
 
-        if (response.success) {
-            successCount++;
+            if (response.success) {
+                successCount++;
+            }
         }
+
+        const successRate: number = successCount / criterias.length;
+        if (successRate >= successMinRate) {
+            return "The code meets the requirements.";
+        }
+
+        let errorReport: string =
+            "The code does not meet the requirements.\n\n";
+        for (const geminiResponse of geminiResponses) {
+            if (geminiResponse.success) continue;
+
+            errorReport += `• ${geminiResponse.message}\n\n`;
+        }
+
+        return errorReport;
+    } catch (error) {
+        console.log(error);
+
+        return "An error occurred while evaluating the code.";
     }
-
-    const successRate: number = successCount / criterias.length;
-    if (successRate >= successMinRate) {
-        return "The code meets the requirements.";
-    }
-
-    let errorReport: string = "The code does not meet the requirements.\n\n";
-    for (const geminiResponse of geminiResponses) {
-        if (geminiResponse.success) continue;
-
-        errorReport += `• ${geminiResponse.message}\n\n`;
-    }
-
-    return errorReport;
 }
