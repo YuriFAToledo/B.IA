@@ -35,7 +35,9 @@ function parseRequirements(
     try {
         const requirements = JSON.parse(requirementsInput);
         return requirements;
-    } catch (error) {
+    } catch (error: any) {
+        core.info('Error parsing requirements input. Returning a default value.');
+        core.setFailed(error.message);
         return {'fafa': 1};
     }
 }

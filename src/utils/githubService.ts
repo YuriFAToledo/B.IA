@@ -3,6 +3,7 @@
 import * as core from "@actions/core"
 import * as github from "@actions/github"
 import * as exec from "@actions/exec"
+import { stringify } from "querystring";
 
 // export async function validateAuthentication(): Promise<void> {
 // 	const token = githubToken || core.getInput("github-token")
@@ -22,12 +23,15 @@ import * as exec from "@actions/exec"
 
 export async function getChangedFiles(githubToken: string): Promise<string[]> {
 	const eventName = github.context.eventName
+    core.info(eventName);
+
 	const changedFiles: string[] = []
 
 	if (eventName === "pull_request" || eventName === "pull_request_target") {
 		// For pull requests, get the list of changed files via the GitHub API
 		const token = githubToken || core.getInput("github-token")
 		if (!token) {
+			core.setFailed("GITHUB_TOKEN is not available. Cannot get changed files.")
 			throw new Error(
 				"GITHUB_TOKEN is not available. Cannot get changed files."
 			)
@@ -37,6 +41,7 @@ export async function getChangedFiles(githubToken: string): Promise<string[]> {
 		const pull_number = github.context.payload.pull_request?.number
 
 		if (!pull_number) {
+			core.setFailed("Could not get pull request number from context.")
 			throw new Error("Could not get pull request number from context.")
 		}
 
@@ -55,6 +60,9 @@ export async function getChangedFiles(githubToken: string): Promise<string[]> {
 		const after = github.context.payload.after
 
 		if (!before || !after) {
+			core.setFailed(
+				'Cannot determine changed files without "before" and "after" commits.'
+			)
 			throw new Error(
 				'Cannot determine changed files without "before" and "after" commits.'
 			)

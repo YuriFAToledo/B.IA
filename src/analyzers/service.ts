@@ -1,18 +1,23 @@
 // main service
-
+import * as core from '@actions/core';
 import {getFileContent} from "../utils/fileService"
 import {approveOrRejectPR, getChangedFiles, postComment} from "../utils/githubService"
 import {getWcagCriteria, IRequirements} from "../utils/wcagService"
 import {IEvaluationReturn, runEvaluations} from "./geminiService"
+import { stringify } from "querystring";
 
 export async function runService(
 	requirements: IRequirements,
 	geminiApiToken: string,
     githubToken: string
 ): Promise<void> {
+    
+    core.info('Running service...');
+    core.info(stringify(requirements));
 	const publicos = getWcagCriteria(requirements)
 
-	const paths = await getChangedFiles(githubToken)
+	const paths = await getChangedFiles(githubToken);
+    core.info(paths.toString());
 
 	let codeStr: string = ""
 

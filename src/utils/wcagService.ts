@@ -1,6 +1,8 @@
 import * as fs from "fs"
 import * as path from "path"
+import * as core from '@actions/core';
 import {ICriteria} from "../analyzers/geminiService"
+import { stringify } from "querystring";
 
 export interface IRequirements {
 	[publicName: string]: number
@@ -8,7 +10,9 @@ export interface IRequirements {
 
 export function getWcagCriteria(
 	requirements: IRequirements
-): Array<{publicName: string; criterias: any[]; value: number}> {
+): Array<{publicName: string; criterias: ICriteria[]; value: number}> {
+
+  core.info(stringify(requirements))
 
 	// Parse the requirements string into an object
 	// Load the wcag-criteria.json file
@@ -21,6 +25,7 @@ export function getWcagCriteria(
 		const data = fs.readFileSync(wcagCriteriaPath, "utf8")
 		wcagData = JSON.parse(data)
 	} catch (error) {
+    core.setFailed("Error reading wcag-criteria.json file.")
 		throw new Error("Error reading wcag-criteria.json file.")
 	}
 
