@@ -1,23 +1,26 @@
 // main service
-import * as core from '@actions/core';
+import * as core from "@actions/core"
 import {getFileContent} from "../utils/fileService"
-import {approveOrRejectPR, getChangedFiles, postComment} from "../utils/githubService"
+import {
+	approveOrRejectPR,
+	getChangedFiles,
+	postComment,
+} from "../utils/githubService"
 import {getWcagCriteria, IRequirements} from "../utils/wcagService"
 import {IEvaluationReturn, runEvaluations} from "./geminiService"
-import { stringify } from "querystring";
+import {stringify} from "querystring"
 
 export async function runService(
 	requirements: IRequirements,
 	geminiApiToken: string,
-    githubToken: string
+	githubToken: string
 ): Promise<void> {
-    
-    core.info('Running service...');
-    core.info(stringify(requirements));
+	core.info("Running service...")
+	core.info(stringify(requirements))
 	const publicos = getWcagCriteria(requirements)
 
-	const paths = await getChangedFiles(githubToken);
-    core.info(paths.toString());
+	const paths = await getChangedFiles(githubToken)
+	core.info(paths.toString())
 
 	let codeStr: string = ""
 
@@ -41,18 +44,18 @@ export async function runService(
 		(evaluation) => !evaluation.success
 	)
 
-    approveOrRejectPR(reproved.length == 0);
+	if (reproved.length > 0) {
+		let message = "The code does not meet the following requirements:\n\n"
+		reproved.forEach((evaluation) => {
+			message += `* ${evaluation.message}\n`
+		})
+		postComment(message, githubToken)
+	} 
+    else {
+		postComment("Parabains", githubToken)
+	}
 
-    if(reproved.length > 0) {
-        let message = "The code does not meet the following requirements:\n\n"
-        reproved.forEach((evaluation) => {
-            message += `* ${evaluation.message}\n`
-        })
-        postComment(message, githubToken)
-        return
-    }
-
-    postComment('Parabains', githubToken)
+	approveOrRejectPR(reproved.length == 0)
 
 	return
 }

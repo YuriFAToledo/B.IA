@@ -57,7 +57,9 @@ export async function getChangedFiles(githubToken: string): Promise<string[]> {
 	} else if (eventName === "push") {
 		// For push events, get the list of changed files using git
 		const before = github.context.payload.before
+		core.info(JSON.stringify(before));
 		const after = github.context.payload.after
+		core.info(JSON.stringify(after));
 
 		if (!before || !after) {
 			core.setFailed(
@@ -85,6 +87,8 @@ export async function getChangedFiles(githubToken: string): Promise<string[]> {
 	} else {
 		core.warning(`Event ${eventName} is not supported.`)
 	}
+
+	core.info(`Changed files: ${(changedFiles)}`)
 
 	return changedFiles
 }

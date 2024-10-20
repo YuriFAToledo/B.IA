@@ -31629,7 +31629,7 @@ const geminiService_1 = __nccwpck_require__(4505);
 const querystring_1 = __nccwpck_require__(3480);
 function runService(requirements, geminiApiToken, githubToken) {
     return __awaiter(this, void 0, void 0, function* () {
-        core.info('Running service...');
+        core.info("Running service...");
         core.info((0, querystring_1.stringify)(requirements));
         const publicos = (0, wcagService_1.getWcagCriteria)(requirements);
         const paths = yield (0, githubService_1.getChangedFiles)(githubToken);
@@ -31645,16 +31645,17 @@ function runService(requirements, geminiApiToken, githubToken) {
             evaluations.push(Object.assign(Object.assign({}, response), { publicName: publico.publicName }));
         }
         const reproved = evaluations.filter((evaluation) => !evaluation.success);
-        (0, githubService_1.approveOrRejectPR)(reproved.length == 0);
         if (reproved.length > 0) {
             let message = "The code does not meet the following requirements:\n\n";
             reproved.forEach((evaluation) => {
                 message += `* ${evaluation.message}\n`;
             });
             (0, githubService_1.postComment)(message, githubToken);
-            return;
         }
-        (0, githubService_1.postComment)('Parabains', githubToken);
+        else {
+            (0, githubService_1.postComment)("Parabains", githubToken);
+        }
+        (0, githubService_1.approveOrRejectPR)(reproved.length == 0);
         return;
     });
 }
@@ -31988,7 +31989,9 @@ function getChangedFiles(githubToken) {
         else if (eventName === "push") {
             // For push events, get the list of changed files using git
             const before = github.context.payload.before;
+            core.info(JSON.stringify(before));
             const after = github.context.payload.after;
+            core.info(JSON.stringify(after));
             if (!before || !after) {
                 core.setFailed('Cannot determine changed files without "before" and "after" commits.');
                 throw new Error('Cannot determine changed files without "before" and "after" commits.');
@@ -32010,6 +32013,7 @@ function getChangedFiles(githubToken) {
         else {
             core.warning(`Event ${eventName} is not supported.`);
         }
+        core.info(`Changed files: ${(changedFiles)}`);
         return changedFiles;
     });
 }
