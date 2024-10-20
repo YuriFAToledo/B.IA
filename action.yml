@@ -1,0 +1,13 @@
+name: 'B.IA Accessibility Checker'
+description: 'Checks the code for conformity with specific WCAG criteria.'
+author: 'Yuri Toledo yuri.toledo@sou.inteli.edu.br - Gabriel Farias gabriel.alves@sou.inteli.edu.br'
+inputs:
+  requirements:
+    description: 'JSON object with the accessibility requirements for each target audience'
+    required: true
+  geminiApiToken:
+    description: 'Gemini API Token for validations and feedback'
+    required: true
+runs:
+  using: 'node12'
+  main: 'dist/index.js'

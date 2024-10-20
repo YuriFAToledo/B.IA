@@ -1,0 +1,1 @@
+// recebe path de parâmetro e retorna o seu valor

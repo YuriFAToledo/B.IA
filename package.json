@@ -1,0 +1,29 @@
+{
+  "name": "b.ia",
+  "version": "1.0.0",
+  "description": "B.IA is an AI-powered static analysis software focused on accessibility that is used in the code review process as a form of automated review",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YuriFAToledo/B.IA.git"
+  },
+  "keywords": [],
+  "author": "Yuri Toledo yuri.toledo@sou.inteli.edu.br - Gabriel Farias gabriel.alves@sou.inteli.edu.br",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/YuriFAToledo/B.IA/issues"
+  },
+  "homepage": "https://github.com/YuriFAToledo/B.IA#readme",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.31",
+    "typescript": "^4.9.5"
+  }
+}
