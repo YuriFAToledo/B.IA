@@ -49,9 +49,11 @@ export async function runService(
 		reproved.forEach((evaluation) => {
 			message += `* ${evaluation.message}\n`
 		})
+        core.notice(message);
 		postComment(message, githubToken)
 	} 
     else {
+        core.notice("Parabains")
 		postComment("Parabains", githubToken)
 	}
 
