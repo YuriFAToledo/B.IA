@@ -23,29 +23,40 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(require("@actions/core"));
-async function run() {
-    try {
-        // Collect inputs
-        const requirementsInput = core.getInput('requirements', { required: true });
-        const geminiApiToken = core.getInput('geminiApiToken', { required: true });
-        const githubToken = core.getInput('githubToken', { required: true });
-        core.info('Captured Inputs:');
-        core.info(`requirements: ${requirementsInput}`);
-        core.info(`geminiApiToken: ${geminiApiToken ? (geminiApiToken.slice(0, 2) + '***' + geminiApiToken.slice(-2, 0)) : 'Not provided'}`);
-        core.info(`githubToken: ${githubToken ? (githubToken.slice(0, 2) + '***' + githubToken.slice(-2, 0)) : 'Not provided'}`);
-        // Call the controller with the inputs
-        // await runController(requirementsInput, geminiApiToken, githubToken);    chamada comentada para fazer com que a action passe
-    }
-    catch (error) {
-        if (error instanceof Error) {
-            core.setFailed(`Action failed with error: ${error.message}`);
+// import { runController } from './controller';
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            // Collect inputs
+            const requirementsInput = core.getInput('requirements', { required: true });
+            const geminiApiToken = core.getInput('geminiApiToken', { required: true });
+            const githubToken = core.getInput('githubToken', { required: true });
+            core.info('Captured Inputs:');
+            core.info(`requirements: ${requirementsInput}`);
+            core.info(`geminiApiToken: ${geminiApiToken ? (geminiApiToken.slice(0, 2) + '***' + geminiApiToken.slice(-2, 0)) : 'Not provided'}`);
+            core.info(`githubToken: ${githubToken ? (githubToken.slice(0, 2) + '***' + githubToken.slice(-2, 0)) : 'Not provided'}`);
+            // Call the controller with the inputs
+            // await runController(requirementsInput, geminiApiToken, githubToken);    chamada comentada para fazer com que a action passe
         }
-        else {
-            core.setFailed('Action failed with an unknown error.');
+        catch (error) {
+            if (error instanceof Error) {
+                core.setFailed(`Action failed with error: ${error.message}`);
+            }
+            else {
+                core.setFailed('Action failed with an unknown error.');
+            }
         }
-    }
+    });
 }
 run();
-//# sourceMappingURL=index.js.map
