@@ -16,6 +16,7 @@ async function run() {
     core.info(`githubToken: ${githubToken ? (githubToken.slice(0,2)+'***'+githubToken.slice(-2, 0)) : 'Not provided'}`);
 
     // Call the controller with the inputs
+    core.info('chamei controller');
     await runController(requirementsInput, geminiApiToken, githubToken);
 
   } catch (error: any) {

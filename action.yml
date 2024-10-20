@@ -9,6 +9,9 @@ inputs:
   geminiApiToken:
     description: 'Gemini API Token for validations and feedback (use Github Secrets)'
     required: true
+  githubToken:
+    description: 'Github Token for CI/CD integration (use Github Secrets)'
+    required: true
 runs:
   using: 'node16'
   main: 'dist/index.js'
